@@ -1,7 +1,11 @@
 from django.contrib import admin
-from django.urls import path
-from articles import urls
+from django.urls import path,include
+from articles.views import ArticleViewSet
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r"articles",ArticleViewSet,basename="article")
 
 urlpatterns = [
-    path('/', admin.site.urls),
+    path('',include(router.urls))
 ]
