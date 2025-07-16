@@ -28,7 +28,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     def update(self,request,pk=None):
         queryset = self.get_object()
-        serializer = ArticleSerializer(queryset,data = request.data,pk=pk)
+        serializer = ArticleSerializer(queryset,data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
@@ -36,5 +36,5 @@ class ArticleViewSet(viewsets.ModelViewSet):
         
     def destroy(self,request,pk=None):
         queryset = self.get_object()
-        serializer = ArticleSerializer(queryset,pk=pk)
-        return Response(serializer.data)
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

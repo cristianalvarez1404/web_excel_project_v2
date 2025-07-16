@@ -19,3 +19,19 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = '__all__'
+
+
+    def validate_title(self,value):
+        if not value.strip:
+            raise serializers.ValidationError("Title cannot be blank")
+        return value
+        
+    def validate_short_desc(self,value):
+        if not value.strip():
+            raise serializers.ValidationError("Short description cannot be blank")
+        return value    
+    
+    def validate_description(self,value):
+        if not value.strip():
+            raise serializers.ValidationError("Description cannot be blank")
+        return value
