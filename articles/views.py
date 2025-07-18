@@ -4,14 +4,25 @@ from .serializers import ArticleSerializer
 from .models import Article
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import ArticleFilter
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
+    queryset = Article.objects.all().order_by('-created_at')
     serializer_class = ArticleSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ArticleFilter
+    # filterset_fields = ['title','short_desc','description']
 
-    def list(self,request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset,many=True)
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self,request, pk=None):

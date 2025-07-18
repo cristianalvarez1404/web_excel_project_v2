@@ -13,13 +13,22 @@ class ShortcutSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    functions = FunctionSerializer(many = True,read_only = True)
-    shortcuts = ShortcutSerializer(many = True,read_only = True)
+    functions = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Function.objects.all()
+    )
+    shortcuts = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Shortcut.objects.all()
+    )
 
     class Meta:
         model = Article
         fields = '__all__'
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['functions'] = FunctionSerializer(instance.functions.all(), many=True).data
+        rep['shortcuts'] = ShortcutSerializer(instance.shortcuts.all(), many=True).data
+        return rep
 
     def validate_title(self,value):
         if not value.strip:
